@@ -1,69 +1,111 @@
 def generate_means_sequence(collated_answers_path):
 
-    # reading the file
+    # Reads the data with each line as an element in the list
     with open(collated_answers_path, "r") as coll:
         lines = coll.readlines()
 
+    # Initialize a list that will contain smaller lists of answer values to every question
+    # for every participant as a single (smaller) list
     smaller_groups = []
     
-    # creating respondents groups
-    for index in range(0, len(lines), 101):
-        individual_group = []
-        for line in lines[index: index+100]:
-            if line.rstrip() != 0:
-                individual_group.append(int(line.rstrip()))
-            else:
-                pass
-        smaller_groups.append(individual_group)
+    # Initalize a list that is updated every 100 (or less) answers of every participant
+    # That is then appended into the smaller groups
+    individual_list = []
 
-    # iterating through each question and using its index on each
-    # respondent group from the generated above to access the answer of it from each one
+    # Looping the lines list until a star is found
+    for index, line in enumerate(lines):
+
+        # Checks if star was the first element in the file then stop
+        # or else continue the implementation
+        if "*" in line:
+            if index != 0:
+                # Updates both the question group list and the participant list
+                smaller_groups.append(individual_list)
+                individual_list = []
+            else:
+                continue
+        # Updates elements in the smaller participant list with every anwer until the star
+        else:
+            individual_list.append(int(line.strip()))
+
+    # Last check if a star was not present for the last participant
+    if individual_list:
+        smaller_groups.append(individual_list)
+        
+
     means = []
     for question in range(0, 100):
+
         question_answers = []
+        
+        # Extracting the question answer through its index from the previous loop
         for individual in smaller_groups:
+
+            # Using that index to find eevry participant's answer to it
             answer = individual[question]
-            if answer == 0:
-                pass
-            else:
+            # ignoring the no-answer questions in the calculation
+            if answer != 0:
                 question_answers.append(answer)
-        # compute means and then append
+
+        # After looping through every answer, calculate the mean for i'th question
+        # and repeat the loop for every given question.
         means.append(sum(question_answers)/len(question_answers))
+        
 
     return means
-
-    
-# Test
-print(generate_means_sequence("mock/M_output/collated.txt"))
 
 
 def visualize_data(collated_answers_path, n):
     
     means = generate_means_sequence(collated_answers_path)
 
-    with open(collated_answers_path, "r") as file:
-        lines = file.readlines()
+    # Reads the data with each line as an element in the list
+    with open(collated_answers_path, "r") as coll:
+        lines = coll.readlines()
 
+    # Initialize a list that will contain smaller lists of answer values to every question
+    # for every participant as a single (smaller) list
     smaller_groups = []
-    for index in range(0, len(lines), 101):
-        individual_group = []
-        for line in lines[index: index+100]:
-            if int(line.rstrip()) != 0:
-                individual_group.append(int(line.rstrip()))
-            else:
-                pass
-        smaller_groups.append(individual_group)
+    
+    # Initalize a list that is updated every 100 answers of every participant
+    # That is then appended into the smaller groups
+    individual_list = []
 
+    # Looping the lines list until a star is found
+    for index, line in enumerate(lines):
+
+        # Checks if star was the first element in the file then stop
+        # or else continue the implementation
+        if "*" in line:
+            if index != 0:
+                # Updates both the question group list and the participant list
+                smaller_groups.append(individual_list)
+                individual_list = []
+            else:
+                continue
+        else:
+            # Updates elements in the smaller participant list with every anwer until the (*)
+            individual_list.append(int(line.strip()))
+
+    # Last check if a star was not present for the last participant
+    if individual_list:
+        smaller_groups.append(individual_list)
+
+    # Plots using matplotlib.pyplot according to the input (n)
+    # Scatter plot of means
     if n == 1:
         plt.scatter(range(1, 101), means)
         plt.xlabel("Question Number")
-        plt.ylabel("Answer Mean")
+        plt.ylabel("Answers Mean")
         plt.show()
     elif n == 2:
+        # Line plots for every individual answers
         for answer in smaller_groups:
             plt.plot(range(1, 101), answer, alpha=0.5)
         plt.xlabel("Question Number")
-        plt.ylabel("Answer Value")
+        plt.ylabel("Answers Value")
         plt.show()
     else:
-        print("Wrong n input; should be 1 or 2")
+        raise Exception("The second given input (n) should be either 1 or 2")
+
+        
