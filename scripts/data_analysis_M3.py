@@ -1,5 +1,36 @@
 def generate_means_sequence(collated_answers_path):
 
+
+    # One participant data from the collated answers file transformed into a list of lines
+    def extract_answers(participant):
+
+        answers = []
+        for index, line in enumerate(participant):
+
+            if "Question " in line:
+
+                question_group = participant[index+1: index+5]
+                checker_iteration = 0
+
+                for smaller_index, answer in enumerate(question_group):
+                    
+                    if "[X]" in answer:
+                        answer_number = smaller_index + 1
+                        answers.append(answer_number)
+                        break
+                    else:
+                        checker_iteration += 1
+                    
+                if checker_iteration >= 4:
+                    answers.append(0)
+            else:
+                continue
+            
+
+        # a list of numbers of answers for each individual
+        return answers
+
+        
     # Reads the data with each line as an element in the list
     with open(collated_answers_path, "r") as coll:
         lines = coll.readlines()
@@ -17,22 +48,18 @@ def generate_means_sequence(collated_answers_path):
 
         # Checks if star was the first element in the file then stop
         # or else continue the implementation
-        if "*" in line:
-            if index != 0:
-                # Updates both the question group list and the participant list
-                smaller_groups.append(individual_list)
-                individual_list = []
-            else:
-                continue
-        # Updates elements in the smaller participant list with every anwer until the star
+        if line.strip() == "*":
+            # Updates both the question group list and the participant list
+            smaller_groups.append(extract_answers(individual_list))
+            individual_list = []
         else:
-            individual_list.append(int(line.strip()))
+            # Updates elements in the smaller participant list with every anwer until the (*)
+            individual_list.append(line)
 
     # Last check if a star was not present for the last participant
     if individual_list:
-        smaller_groups.append(individual_list)
+        smaller_groups.append(extract_answers(individual_list))
         
-
     means = []
     for question in range(0, 100):
 
@@ -49,10 +76,10 @@ def generate_means_sequence(collated_answers_path):
 
         # After looping through every answer, calculate the mean for i'th question
         # and repeat the loop for every given question.
-        means.append(sum(question_answers)/len(question_answers))
-        
+        means.append(sum(question_answers)/len(question_answers))        
 
     return means
+
 
 
 def visualize_data(collated_answers_path, n):
