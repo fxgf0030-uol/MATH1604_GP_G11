@@ -1,8 +1,47 @@
 def generate_means_sequence(collated_answers_path):
+    """
+    Generates a sequence of mean answer values per question across all participants.
 
 
-    # One participant data from the collated answers file transformed into a list of lines
+    Definition
+    -----------
+        This function reads a structured text file (collated answers) containing participants' answers,
+        extracts selected answers per question, and computes the mean response for each question
+        across all participants (ignoring unanswered questions marked as 0).
+
+
+    Parameters
+    -----------
+        collated_answers_path (str): Path to the text file containing collated participant answers.
+
+
+    Returns
+    -----------
+        list[float]: A list of mean values, one per question.
+    """
+
     def extract_answers(participant):
+
+        """
+        Extracts selected answers for a single participant.
+
+
+        Definition
+        -----------
+            Each question is assumed to have a block of 4 possible answers,
+            with the selected answer marked by '[X]'. If no answer is selected,
+            0 is recorded for that question.
+
+
+        Parameters
+        -----------
+            participant (list[str]): Lines corresponding to a single participant.
+
+
+        Returns
+        -----------
+            list[int]: List of selected answer indices (1-4), or 0 if unanswered.
+        """
 
         answers = []
         # iterate through all elements of this list of lines of one participant
@@ -86,9 +125,50 @@ def generate_means_sequence(collated_answers_path):
 
 
 def visualize_data(collated_answers_path, n):
+    """
+    Visualizes participant answer data using matplotlib.
+
+
+    Parameters
+    -----------
+        collated_answers_path (str): Path to the text file containing collated participant answers.
+        n (int): Visualization mode selector (1 or 2).
+
+
+    Returns
+    -----------
+        Supports two visualization modes:
+        - n == 1: scatter plot of mean answers per question
+        - n == 2: line plots of individual participant responses
+
+
+    Raises
+    -----------
+        Exception: If n is not 1 or 2.
+    """
 
     # One participant data from the collated answers file transformed into a list of lines
     def extract_answers(participant):
+        """
+        Extracts selected answers for a single participant.
+
+
+        Definition
+        -----------
+            Each question is assumed to have a block of 4 possible answers,
+            with the selected answer marked by '[X]'. If no answer is selected,
+            0 is recorded for that question.
+
+
+        Parameters
+        -----------
+            participant (list[str]): Lines corresponding to a single participant.
+
+
+        Returns
+        -----------
+            list[int]: List of selected answer indices (1-4), or 0 if unanswered.
+        """
 
         answers = []
         # iterate through all elements of this list of lines of one participant
