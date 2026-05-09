@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 def generate_means_sequence(collated_answers_path):
     """
     Generates a sequence of mean answer values per question across all participants.
@@ -231,11 +234,16 @@ def visualize_data(collated_answers_path, n):
 
     means = generate_means_sequence(collated_answers_path)
     # Plots using matplotlib.pyplot according to the input (n)
+
+    plt.figure(figsize=(10, 5))
+    plt.grid(True)
+
     # Scatter plot of means
     if n == 1:
         plt.scatter(range(1, 101), means)
         plt.xlabel("Question Number")
-        plt.ylabel("Answers Mean")
+        plt.ylabel("Mean Answer Value")
+        plt.title("Meane Answer Value per Question")
         plt.show()
     elif n == 2:
         # Line plots for every individual answers
@@ -243,6 +251,7 @@ def visualize_data(collated_answers_path, n):
             plt.plot([i + 1 for i in range(len(answer))], answer, alpha=0.5)
         plt.xlabel("Question Number")
         plt.ylabel("Answers Value")
+        plt.title("Individual Answer Sequences")
         plt.show()
     else:
         raise Exception("The second given input (n) should be either 1 or 2")
